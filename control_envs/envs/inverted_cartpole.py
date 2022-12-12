@@ -4,14 +4,13 @@ Copied from http://incompleteideas.net/sutton/book/code/pole.c
 permalink: https://perma.cc/C9ZM-652R
 """
 import math
-from typing import Optional, Union
+from typing import Optional, Union, SupportsFloat, Tuple
 
 import numpy as np
 
 import gym
 from gym import logger, spaces
-from gym.envs.classic_control import utils
-from gym.error import DependencyNotInstalled
+# from gym.error import DependencyNotInstalled
 
 
 class InvertedCartPoleEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
@@ -196,7 +195,7 @@ class InvertedCartPoleEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
         super().reset(seed=seed)
         # Note that if you use custom reset bounds, it may lead to out-of-bound
         # state/observations.
-        low, high = utils.maybe_parse_reset_bounds(
+        low, high = self.maybe_parse_reset_bounds(
             options, -0.05, 0.05  # default low
         )  # default high
         self.state = self.np_random.uniform(low=low, high=high, size=(4,))
@@ -219,7 +218,7 @@ class InvertedCartPoleEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
             import pygame
             from pygame import gfxdraw
         except ImportError:
-            raise DependencyNotInstalled(
+            raise Exception(
                 "pygame is not installed, run `pip install gym[classic_control]`"
             )
 
@@ -310,3 +309,40 @@ class InvertedCartPoleEnv(gym.Env[np.ndarray, Union[int, np.ndarray]]):
             pygame.display.quit()
             pygame.quit()
             self.isopen = False
+    
+    def verify_number_and_cast(self, x: SupportsFloat) -> float:
+        """Verify parameter is a single number and cast to a float."""
+        try:
+            x = float(x)
+        except (ValueError, TypeError):
+            raise ValueError(f"An option ({x}) could not be converted to a float.")
+        return x
+    
+    def maybe_parse_reset_bounds(self,
+        options: Optional[dict], default_low: float, default_high: float
+    ) -> Tuple[float, float]:
+        """
+        This function can be called during a reset() to customize the sampling
+        ranges for setting the initial state distributions.
+        Args:
+          options: Options passed in to reset().
+          default_low: Default lower limit to use, if none specified in options.
+          default_high: Default upper limit to use, if none specified in options.
+        Returns:
+          Tuple of the lower and upper limits.
+        """
+        if options is None:
+            return default_low, default_high
+    
+        low = options.get("low") if "low" in options else default_low
+        high = options.get("high") if "high" in options else default_high
+    
+        # We expect only numerical inputs.
+        low = self.verify_number_and_cast(low)
+        high = self.verify_number_and_cast(high)
+        if low > high:
+            raise ValueError(
+                f"Lower bound ({low}) must be lower than higher bound ({high})."
+            )
+    
+        return low, high
