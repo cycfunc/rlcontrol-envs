@@ -61,13 +61,19 @@ class ContinuousCartPoleEnv(gym.Env):
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 50}
 
     def __init__(self):
+        self.min_action = -1.0
+        self.max_action =  1.0
+        
         self.gravity = 9.8
         self.masscart = 1.0
         self.masspole = 0.1
         self.total_mass = self.masspole + self.masscart
         self.length = 0.5  # actually half the pole's length
         self.polemass_length = self.masspole * self.length
-        self.force_mag = 10.0
+        
+        # self.force_mag = 10.0   # TODO: del this
+        self.force_mag = 15.0       # TODO WARN: make this 10?
+        
         self.tau = 0.02  # seconds between state updates
         self.kinematics_integrator = "euler"
 
@@ -86,8 +92,10 @@ class ContinuousCartPoleEnv(gym.Env):
             ],
             dtype=np.float32,
         )
-
-        self.action_space = spaces.Discrete(2)
+        
+        self.action_space = spaces.Box(
+            low=self.min_action, high=self.max_action, shape=(1,), dtype=np.float32
+        )
         self.observation_space = spaces.Box(-high, high, dtype=np.float32)
 
         self.seed()
@@ -95,17 +103,20 @@ class ContinuousCartPoleEnv(gym.Env):
         self.state = None
 
         self.steps_beyond_done = None
+        
+        logger.warn('reward should be a function of the power?')
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
     def step(self, action):
-        err_msg = "%r (%s) invalid" % (action, type(action))
-        assert self.action_space.contains(action), err_msg
+        # err_msg = "%r (%s) invalid" % (action, type(action))
+        # assert self.action_space.contains(action), err_msg
 
         x, x_dot, theta, theta_dot = self.state
-        force = self.force_mag if action == 1 else -self.force_mag
+        force = self.force_mag*min(max(action[0], self.min_action), self.max_action)
+        # force = self.force_mag if action == 1 else -self.force_mag
         costheta = math.cos(theta)
         sintheta = math.sin(theta)
 
@@ -138,7 +149,7 @@ class ContinuousCartPoleEnv(gym.Env):
             or theta < -self.theta_threshold_radians
             or theta > self.theta_threshold_radians
         )
-
+        
         if not done:
             reward = 1.0
         elif self.steps_beyond_done is None:
