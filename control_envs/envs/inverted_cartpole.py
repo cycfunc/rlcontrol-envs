@@ -61,7 +61,7 @@ class InvertedCartPoleEnv(gym.Env):
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 50}
 
     def __init__(self):
-        self.gravity = 9.8
+        self.gravity = 3.0      # TODO WARN used to be 9.8
         self.masscart = 1.0
         self.masspole = 0.1
         self.total_mass = self.masspole + self.masscart
