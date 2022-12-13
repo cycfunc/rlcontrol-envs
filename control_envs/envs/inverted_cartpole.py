@@ -195,6 +195,15 @@ class InvertedCartPoleEnv(gym.Env):
         
         logger.warn(str(nstate))
         
+        anotherone = self.np_random.uniform(
+            low=[-0.05, -0.05, -0.05 + math.pi, -0.05],
+            high=[0.05, 0.05, 0.05 + math.pi, 0.05],
+        )
+        
+        logger.warn(anotherone)
+        
+        print('bruuh')
+        
         assert False, 'you what mate'
         
         self.steps_beyond_done = None
