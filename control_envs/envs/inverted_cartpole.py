@@ -133,16 +133,19 @@ class InvertedCartPoleEnv(gym.Env):
         self.state = (x, x_dot, theta, theta_dot)
         
         theta_threshold_satisfied = bool(
-            theta < -self.theta_threshold_radians
-            or theta > self.theta_threshold_radians
+            theta >= -self.theta_threshold_radians
+            and theta <= self.theta_threshold_radians
         )
         x_threshold_satisfied = bool(
-            x < -self.x_threshold
-            or x > self.x_threshold
+            x >= -self.x_threshold
+            and x <= self.x_threshold
         )
+        
         done = bool(
-            x_threshold_satisfied
+            not x_threshold_satisfied
         )
+        
+        assert -math.pi < theta and theta < math.pi, 'theta violation'
 
         if not done:
             if theta_threshold_satisfied:
