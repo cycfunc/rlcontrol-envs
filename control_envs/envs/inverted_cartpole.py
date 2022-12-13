@@ -160,7 +160,7 @@ class InvertedCartPoleEnv(gym.Env):
         assert -math.pi <= remapped_theta and remapped_theta <= math.pi, 'theta violation'
 
         if not done:
-            if -math.pi <= remapped_theta and remapped_theta <= math.pi:
+            if remapped_theta_threshold_satisfied:
                 reward = 1.0
             else:
                 reward = 0.0
