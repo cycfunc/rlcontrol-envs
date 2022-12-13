@@ -145,7 +145,7 @@ class InvertedCartPoleEnv(gym.Env):
             not x_threshold_satisfied
         )
         
-        assert False, 'lol'
+        raise Exception('lol')
         
         assert -math.pi < theta and theta < math.pi, 'theta violation'
 
