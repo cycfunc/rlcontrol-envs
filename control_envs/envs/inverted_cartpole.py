@@ -184,7 +184,8 @@ class InvertedCartPoleEnv(gym.Env):
 
     def reset(self):
         self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
-        logger.warn(str(self.state), type(self.state))
+        logger.warn(str(self.state))
+        logger.warn(str(type(self.state)))
         
         nstate = np.array([
             self.np_random.uniform(low=-0.05, high=0.05),
@@ -193,7 +194,8 @@ class InvertedCartPoleEnv(gym.Env):
             self.np_random.uniform(low=-0.05, high=0.05)
         ])
         
-        logger.warn(str(nstate), type(nstate))
+        logger.warn(str(nstate))
+        logger.warn(str(type(nstate)))
         print('brosef')
         
         anotherone = self.np_random.uniform(
@@ -202,7 +204,7 @@ class InvertedCartPoleEnv(gym.Env):
             size=(4,)
         )
         
-        logger.warn(anotherone)
+        logger.warn(str(anotherone))
         
         print('bruuh')
         
