@@ -141,11 +141,14 @@ class InvertedCartPoleEnv(gym.Env):
             or x > self.x_threshold
         )
         done = bool(
-            theta_threshold_satisfied or x_threshold_satisfied
+            x_threshold_satisfied
         )
 
         if not done:
-            reward = 1.0
+            if theta_threshold_satisfied:
+                reward = 1.0
+            else:
+                reward = 0.0
         elif self.steps_beyond_done is None:
             # Pole just fell!
             self.steps_beyond_done = 0
