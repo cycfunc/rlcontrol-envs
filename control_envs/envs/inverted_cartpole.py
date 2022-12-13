@@ -152,10 +152,15 @@ class InvertedCartPoleEnv(gym.Env):
             return theta
         remapped_theta = remap_angle(theta)
         
-        assert -math.pi < remapped_theta and remapped_theta < math.pi, 'theta violation'
+        remapped_theta_threshold_satisfied = bool(
+            remapped_theta >= -self.theta_threshold_radians
+            and remapped_theta <= self.theta_threshold_radians
+        )
+        
+        assert -math.pi <= remapped_theta and remapped_theta <= math.pi, 'theta violation'
 
         if not done:
-            if theta_threshold_satisfied:
+            if -math.pi <= remapped_theta and remapped_theta <= math.pi:
                 reward = 1.0
             else:
                 reward = 0.0
