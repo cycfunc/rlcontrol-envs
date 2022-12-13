@@ -11,7 +11,7 @@ from gym.utils import seeding
 import numpy as np
 
 
-class InvertedCartPoleEnv(gym.Env):
+class ContinuousCartPoleEnv(gym.Env):
     """
     Description:
         A pole is attached by an un-actuated joint to a cart, which moves along
@@ -187,7 +187,34 @@ class InvertedCartPoleEnv(gym.Env):
             low=[-0.05, -0.05, -0.05 + math.pi, -0.05],
             high=[0.05, 0.05, 0.05 + math.pi, 0.05],
             size=(4,)
-        )       # here set the angle to pi - this inverts it
+        )
+        
+        # self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
+        # logger.warn(str(self.state))
+        # logger.warn(str(type(self.state)))
+        
+        # nstate = np.array([
+        #     self.np_random.uniform(low=-0.05, high=0.05),
+        #     self.np_random.uniform(low=-0.05, high=0.05),
+        #     self.np_random.uniform(low=-0.05 + math.pi, high=0.05 + math.pi),
+        #     self.np_random.uniform(low=-0.05, high=0.05)
+        # ])
+        
+        # logger.warn(str(nstate))
+        # logger.warn(str(type(nstate)))
+        # print('brosef')
+        
+        # anotherone = self.np_random.uniform(
+        #     low=[-0.05, -0.05, -0.05 + math.pi, -0.05],
+        #     high=[0.05, 0.05, 0.05 + math.pi, 0.05],
+        #     size=(4,)
+        # )
+        
+        # logger.warn(str(anotherone))
+        
+        # print('bruuh')
+        
+        # assert False, 'you what mate'
         
         self.steps_beyond_done = None
         return np.array(self.state, dtype=np.float32)
