@@ -61,7 +61,7 @@ class ContinuousCartPoleEnv(gym.Env):
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 50}
 
     def __init__(self):
-        self.gravity = 3.0      # TODO WARN used to be 9.8
+        self.gravity = 9.8
         self.masscart = 1.0
         self.masspole = 0.1
         self.total_mass = self.masspole + self.masscart
@@ -72,8 +72,7 @@ class ContinuousCartPoleEnv(gym.Env):
         self.kinematics_integrator = "euler"
 
         # Angle at which to fail the episode
-        self.soft_theta_threshold_radians = 12 * 2 * math.pi / 360
-        self.hard_theta_threshold_radians = np.finfo(np.float32).max
+        self.theta_threshold_radians = 12 * 2 * math.pi / 360
         self.x_threshold = 2.4
 
         # Angle limit set to 2 * theta_threshold_radians so failing observation
@@ -82,7 +81,7 @@ class ContinuousCartPoleEnv(gym.Env):
             [
                 self.x_threshold * 2,
                 np.finfo(np.float32).max,
-                self.hard_theta_threshold_radians,
+                self.theta_threshold_radians * 2,
                 np.finfo(np.float32).max,
             ],
             dtype=np.float32,
@@ -132,43 +131,20 @@ class ContinuousCartPoleEnv(gym.Env):
             theta = theta + self.tau * theta_dot
 
         self.state = (x, x_dot, theta, theta_dot)
-        
-        sof_theta_threshold_satisfied = bool(
-            theta >= -self.soft_theta_threshold_radians
-            and theta <= self.soft_theta_threshold_radians
-        )
-        x_threshold_satisfied = bool(
-            x >= -self.x_threshold
-            and x <= self.x_threshold
-        )
-        
+
         done = bool(
-            not x_threshold_satisfied
+            x < -self.x_threshold
+            or x > self.x_threshold
+            or theta < -self.theta_threshold_radians
+            or theta > self.theta_threshold_radians
         )
-        
-        def remap_angle(theta):
-            theta %= 2*math.pi
-            if theta > math.pi:
-                theta -= 2*math.pi
-            return theta
-        remapped_theta = remap_angle(theta)
-        
-        remapped_soft_theta_threshold_satisfied = bool(
-            remapped_theta >= -self.soft_theta_threshold_radians
-            and remapped_theta <= self.soft_theta_threshold_radians
-        )
-        
-        assert -math.pi <= remapped_theta and remapped_theta <= math.pi, 'theta violation'
 
         if not done:
-            if remapped_soft_theta_threshold_satisfied:
-                reward = 1.0
-            else:
-                reward = 0.0
+            reward = 1.0
         elif self.steps_beyond_done is None:
             # Pole just fell!
             self.steps_beyond_done = 0
-            reward = 0.0
+            reward = 1.0
         else:
             if self.steps_beyond_done == 0:
                 logger.warn(
@@ -183,39 +159,7 @@ class ContinuousCartPoleEnv(gym.Env):
         return np.array(self.state, dtype=np.float32), reward, done, {}
 
     def reset(self):
-        self.state = self.np_random.uniform(
-            low=[-0.05, -0.05, -0.05 + math.pi, -0.05],
-            high=[0.05, 0.05, 0.05 + math.pi, 0.05],
-            size=(4,)
-        )
-        
-        # self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
-        # logger.warn(str(self.state))
-        # logger.warn(str(type(self.state)))
-        
-        # nstate = np.array([
-        #     self.np_random.uniform(low=-0.05, high=0.05),
-        #     self.np_random.uniform(low=-0.05, high=0.05),
-        #     self.np_random.uniform(low=-0.05 + math.pi, high=0.05 + math.pi),
-        #     self.np_random.uniform(low=-0.05, high=0.05)
-        # ])
-        
-        # logger.warn(str(nstate))
-        # logger.warn(str(type(nstate)))
-        # print('brosef')
-        
-        # anotherone = self.np_random.uniform(
-        #     low=[-0.05, -0.05, -0.05 + math.pi, -0.05],
-        #     high=[0.05, 0.05, 0.05 + math.pi, 0.05],
-        #     size=(4,)
-        # )
-        
-        # logger.warn(str(anotherone))
-        
-        # print('bruuh')
-        
-        # assert False, 'you what mate'
-        
+        self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
         self.steps_beyond_done = None
         return np.array(self.state, dtype=np.float32)
 
