@@ -187,7 +187,7 @@ class InvertedCartPoleEnv(gym.Env):
         logger.warn(str(self.state))
         
         nstate = np.array([
-            self.np_random.uniform(low=-0.05, high=0.05, size=(1,)),
+            self.np_random.uniform(low=-0.05, high=0.05),
             self.np_random.uniform(low=-0.05, high=0.05, size=(1,)),
             self.np_random.uniform(low=-0.05 + math.pi, high=0.05 + math.pi, size=(1,)),
             self.np_random.uniform(low=-0.05, high=0.05, size=(1,))
