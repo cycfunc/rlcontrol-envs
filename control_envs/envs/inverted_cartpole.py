@@ -184,20 +184,22 @@ class InvertedCartPoleEnv(gym.Env):
 
     def reset(self):
         self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
-        logger.warn(str(self.state))
+        logger.warn(str(self.state), type(self.state))
         
         nstate = np.array([
             self.np_random.uniform(low=-0.05, high=0.05),
-            self.np_random.uniform(low=-0.05, high=0.05, size=(1,)),
-            self.np_random.uniform(low=-0.05 + math.pi, high=0.05 + math.pi, size=(1,)),
-            self.np_random.uniform(low=-0.05, high=0.05, size=(1,))
+            self.np_random.uniform(low=-0.05, high=0.05),
+            self.np_random.uniform(low=-0.05 + math.pi, high=0.05 + math.pi),
+            self.np_random.uniform(low=-0.05, high=0.05)
         ])
         
-        logger.warn(str(nstate))
+        logger.warn(str(nstate), type(nstate))
+        print('brosef')
         
         anotherone = self.np_random.uniform(
             low=[-0.05, -0.05, -0.05 + math.pi, -0.05],
             high=[0.05, 0.05, 0.05 + math.pi, 0.05],
+            size=(4,)
         )
         
         logger.warn(anotherone)
