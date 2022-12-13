@@ -183,32 +183,38 @@ class InvertedCartPoleEnv(gym.Env):
         return np.array(self.state, dtype=np.float32), reward, done, {}
 
     def reset(self):
-        self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
-        logger.warn(str(self.state))
-        logger.warn(str(type(self.state)))
-        
-        nstate = np.array([
-            self.np_random.uniform(low=-0.05, high=0.05),
-            self.np_random.uniform(low=-0.05, high=0.05),
-            self.np_random.uniform(low=-0.05 + math.pi, high=0.05 + math.pi),
-            self.np_random.uniform(low=-0.05, high=0.05)
-        ])
-        
-        logger.warn(str(nstate))
-        logger.warn(str(type(nstate)))
-        print('brosef')
-        
-        anotherone = self.np_random.uniform(
+        self.state = self.np_random.uniform(
             low=[-0.05, -0.05, -0.05 + math.pi, -0.05],
             high=[0.05, 0.05, 0.05 + math.pi, 0.05],
             size=(4,)
         )
         
-        logger.warn(str(anotherone))
+        # self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
+        # logger.warn(str(self.state))
+        # logger.warn(str(type(self.state)))
         
-        print('bruuh')
+        # nstate = np.array([
+        #     self.np_random.uniform(low=-0.05, high=0.05),
+        #     self.np_random.uniform(low=-0.05, high=0.05),
+        #     self.np_random.uniform(low=-0.05 + math.pi, high=0.05 + math.pi),
+        #     self.np_random.uniform(low=-0.05, high=0.05)
+        # ])
         
-        assert False, 'you what mate'
+        # logger.warn(str(nstate))
+        # logger.warn(str(type(nstate)))
+        # print('brosef')
+        
+        # anotherone = self.np_random.uniform(
+        #     low=[-0.05, -0.05, -0.05 + math.pi, -0.05],
+        #     high=[0.05, 0.05, 0.05 + math.pi, 0.05],
+        #     size=(4,)
+        # )
+        
+        # logger.warn(str(anotherone))
+        
+        # print('bruuh')
+        
+        # assert False, 'you what mate'
         
         self.steps_beyond_done = None
         return np.array(self.state, dtype=np.float32)
