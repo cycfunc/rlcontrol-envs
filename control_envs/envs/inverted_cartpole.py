@@ -145,11 +145,14 @@ class InvertedCartPoleEnv(gym.Env):
             not x_threshold_satisfied
         )
         
-        logger.warn(
-            "why exception no work?"
-        )
+        def remap_angle(theta):
+            theta %= 2*math.pi
+            if theta > math.pi:
+                theta -= 2*math.pi
+            return theta
+        remapped_theta = remap_angle(theta)
         
-        assert -math.pi < theta and theta < math.pi, 'theta violation'
+        assert -math.pi < remapped_theta and remapped_theta < math.pi, 'theta violation'
 
         if not done:
             if theta_threshold_satisfied:
