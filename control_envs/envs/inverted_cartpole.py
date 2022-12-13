@@ -72,7 +72,8 @@ class InvertedCartPoleEnv(gym.Env):
         self.kinematics_integrator = "euler"
 
         # Angle at which to fail the episode
-        self.theta_threshold_radians = 12 * 2 * math.pi / 360
+        self.soft_theta_threshold_radians = 12 * 2 * math.pi / 360
+        self.hard_theta_threshold_radians = np.finfo(np.float32).max
         self.x_threshold = 2.4
 
         # Angle limit set to 2 * theta_threshold_radians so failing observation
@@ -81,7 +82,7 @@ class InvertedCartPoleEnv(gym.Env):
             [
                 self.x_threshold * 2,
                 np.finfo(np.float32).max,
-                self.theta_threshold_radians * 2,
+                self.hard_theta_threshold_radians,
                 np.finfo(np.float32).max,
             ],
             dtype=np.float32,
@@ -132,9 +133,9 @@ class InvertedCartPoleEnv(gym.Env):
 
         self.state = (x, x_dot, theta, theta_dot)
         
-        theta_threshold_satisfied = bool(
-            theta >= -self.theta_threshold_radians
-            and theta <= self.theta_threshold_radians
+        sof_theta_threshold_satisfied = bool(
+            theta >= -self.soft_theta_threshold_radians
+            and theta <= self.soft_theta_threshold_radians
         )
         x_threshold_satisfied = bool(
             x >= -self.x_threshold
@@ -152,15 +153,15 @@ class InvertedCartPoleEnv(gym.Env):
             return theta
         remapped_theta = remap_angle(theta)
         
-        remapped_theta_threshold_satisfied = bool(
-            remapped_theta >= -self.theta_threshold_radians
-            and remapped_theta <= self.theta_threshold_radians
+        remapped_soft_theta_threshold_satisfied = bool(
+            remapped_theta >= -self.soft_theta_threshold_radians
+            and remapped_theta <= self.soft_theta_threshold_radians
         )
         
         assert -math.pi <= remapped_theta and remapped_theta <= math.pi, 'theta violation'
 
         if not done:
-            if remapped_theta_threshold_satisfied:
+            if remapped_soft_theta_threshold_satisfied:
                 reward = 1.0
             else:
                 reward = 0.0
