@@ -157,7 +157,7 @@ class ContinuousCartPoleEnv(gym.Env):
         
         if not done:
             # reward = 1.0
-            reward = -x**2 - (self.k**2)*force*dx
+            reward = -x**2 # - (self.k**2)*force*dx
         elif self.steps_beyond_done is None:
             # Pole just fell!
             self.steps_beyond_done = 0
