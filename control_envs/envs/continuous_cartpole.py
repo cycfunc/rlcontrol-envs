@@ -74,6 +74,10 @@ class ContinuousCartPoleEnv(gym.Env):
         # self.force_mag = 10.0   # TODO: del this
         self.force_mag = 15.0       # TODO WARN: make this 10?
         
+        self.k = 0.2    # TODO: witsenhausen parameter k
+        # TODO: might need modification
+        # TODO: might need a larger k
+        
         self.tau = 0.02  # seconds between state updates
         self.kinematics_integrator = "euler"
 
@@ -131,7 +135,8 @@ class ContinuousCartPoleEnv(gym.Env):
         xacc = temp - self.polemass_length * thetaacc * costheta / self.total_mass
 
         if self.kinematics_integrator == "euler":
-            x = x + self.tau * x_dot
+            dx = self.tau * x_dot
+            x = x + dx
             x_dot = x_dot + self.tau * xacc
             theta = theta + self.tau * theta_dot
             theta_dot = theta_dot + self.tau * thetaacc
@@ -151,11 +156,13 @@ class ContinuousCartPoleEnv(gym.Env):
         )
         
         if not done:
-            reward = 1.0
+            # reward = 1.0
+            reward = -x**2 - (self.k**2)*force*dx
         elif self.steps_beyond_done is None:
             # Pole just fell!
             self.steps_beyond_done = 0
-            reward = 1.0
+            # reward = 1.0
+            reward = -100
         else:
             if self.steps_beyond_done == 0:
                 logger.warn(
