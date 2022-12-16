@@ -74,7 +74,7 @@ class ContinuousCartPoleEnv(gym.Env):
         # self.force_mag = 10.0   # TODO: del this
         self.force_mag = 15.0       # TODO WARN: make this 10?
         
-        self.k = 0.2    # TODO: witsenhausen parameter k
+        self.k = 2    # TODO: witsenhausen parameter k
         # TODO: might need modification
         # TODO: might need a larger k
         
@@ -157,7 +157,7 @@ class ContinuousCartPoleEnv(gym.Env):
         
         if not done:
             # reward = 1.0
-            reward = -x**2 # - (self.k**2)*force*dx
+            reward = -x**2 - (self.k**2)*force*dx
         elif self.steps_beyond_done is None:
             # Pole just fell!
             self.steps_beyond_done = 0
