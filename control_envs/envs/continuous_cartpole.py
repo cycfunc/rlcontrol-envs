@@ -156,14 +156,14 @@ class ContinuousCartPoleEnv(gym.Env):
         )
         
         if not done:
-            reward = 1.0
-            # reward = -x**2 # - (self.k**2)*force*dx
+            # reward = 1.0
+            reward = -x**2 # - (self.k**2)*force*dx
         elif self.steps_beyond_done is None:
             # Pole just fell!
             self.steps_beyond_done = 0
-            reward = 0.69
+            # reward = 0.69
             
-            # reward = -100
+            reward = -10000   # should be very negative to avoid steps beyond
         else:
             if self.steps_beyond_done == 0:
                 logger.warn(
@@ -179,6 +179,7 @@ class ContinuousCartPoleEnv(gym.Env):
 
     def reset(self):
         self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
+        # TODO: make it gaussian to make it closer to witsenhausen?
         self.steps_beyond_done = None
         return np.array(self.state, dtype=np.float32)
 
